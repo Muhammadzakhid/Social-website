@@ -1,8 +1,7 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.conf import settings
 
-# Create your models here.
 
 class Profile(models.Model):
     user = models.OneToOneField(
@@ -28,22 +27,21 @@ class Contact(models.Model):
     user_to = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='rel_to_set',
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE
     )
-    
     created = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         indexes = [
             models.Index(fields=['-created']),
         ]
         ordering = ['-created']
-        
+
     def __str__(self):
         return f'{self.user_from} follows {self.user_to}'
 
 
-# Add a following field to the user model dynamically
+# Add following field to User dynamically
 user_model = get_user_model()
 user_model.add_to_class(
     'following',
@@ -51,6 +49,6 @@ user_model.add_to_class(
         'self',
         through=Contact,
         related_name='followers',
-        symmetrical=False
-    )    
+        symmetrical=False,
+    ),
 )
